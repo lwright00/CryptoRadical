@@ -1,6 +1,7 @@
 public class CeaserCypher {
     public String text;
-    private static char [] alphabet = "abcdefghijklmnopqrstuvwxyz".toCharArray();
+    private static char [] alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".toCharArray();
+    private static int KEY = 70000;
 
     public CeaserCypher(String message){
         text = message;
@@ -8,38 +9,60 @@ public class CeaserCypher {
     public String eText(){
         StringBuilder sb = new StringBuilder ();
         for (char ch: text.toCharArray()){
-            // Get the encryption index
-            int I = eAtoI(ch);
-            // use the encryption index get the character from the alphabet array
-            char eChar = alphabet[I];
-            // add the new encryption character to sb
-            sb.append(eChar);
+            if (Character.isLetter(ch)) {
+                // Get encryption index
+                int alphabetIndex = asciiEncryptionIndex(ch);
+                // Get encrypted character
+                char encryptedChar = alphabet[alphabetIndex];
+                // Add character to the string builder
+                sb.append(encryptedChar);
+            } else {
+                sb.append(ch);
+            }
+
         }
         return sb.toString();
     }
     public String deText (){
         StringBuilder sb = new StringBuilder ();
         for (char ch: text.toCharArray()) {
-            int I = dAtoI(ch);
-            char dChar = alphabet[I];
-            sb.append(dChar);
+            if (Character.isLetter(ch)) {
+                // Get decryption index
+                int alphabetIndex = asciiDecryptionIndex(ch);
+                // Get decrypted character
+                char decryptedChar = alphabet[alphabetIndex];
+                // Add character to the string builder
+                sb.append(decryptedChar);
+            } else {
+                sb.append(ch);
+            }
+
         }
         return sb.toString();
     }
 
-    public int atoi(char c) {
+    public int indexOfAscii(char c) {
         int i = (int)c;
-        i = (i - 'a');
+        if (Character.isUpperCase(c)) {
+            i = (i - 'A') + (alphabet.length / 2);
+        } else {
+            i = (i - 'a');
+        }
         return i;
-
-    }
-    private int eAtoI (char c) {
-        int e = (atoi(c) + 3976) % 26;
-        return e;
     }
 
-    private int dAtoI ( char c ){
-        int d = (atoi(c) - 3976) % 26;
-        return d;
+    private int encryptionIndex(int i) {
+        return (i + KEY) % alphabet.length;
+    }
+
+    private int asciiEncryptionIndex(char c) {
+        return encryptionIndex(indexOfAscii(c));
+    }
+
+    private int decryptionIndex(int i) {
+        return (i - KEY) % alphabet.length;
+    }
+    private int asciiDecryptionIndex (char c ){
+        return (alphabet.length + decryptionIndex(indexOfAscii(c))) % alphabet.length;
     }
 }
